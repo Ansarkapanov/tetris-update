@@ -3,7 +3,8 @@ from random import randint
 
 
 class Game:
-	
+
+	#variables for board design
 	board = []
 	rowNumber = 0; colNumber = 0
 	emptyColor = "light sea green"
@@ -11,7 +12,8 @@ class Game:
 
 	tetrisPieces = []
 	tetrisPieceColors = []
-	
+
+	#variables to keep track of falling piece
 	fallingPiece = []
 	fallingPieceColor = ""
 	pieceX = 0; pieceY = 0
@@ -37,7 +39,8 @@ class Game:
 		#creates new falling piece
 		self.newFallingPiece()
 
-		#self.moveFallingPiece(0, -4)
+		#self.moveFallingPiece(0, 4)
+		#print self.moveIsLegal(self.pieceX+13, self.pieceY-4)
 
 		#persists until user exits game
 		self.root.mainloop()
@@ -141,7 +144,7 @@ class Game:
 
 	#moves falling piece if move is legal
 	def moveFallingPiece(self, drow, dcol):
-		if self.moveIsLegal(drow, dcol):
+		if self.moveIsLegal(self.pieceX+drow, self.pieceY+dcol):
 			self.pieceX += drow
 			self.pieceY += dcol
 			#redraws moved piece and board
@@ -149,24 +152,15 @@ class Game:
 			self.drawFallingPiece()
 	
 	#checks if move is legal
-	def moveIsLegal(self, drow, dcol):
-		#check row move
-		if drow != 0:
-			temp = self.pieceX + drow
-			for row in range(len(self.fallingPiece)):
+	def moveIsLegal(self, x, y):
+		#checks piece at x, y for legal move
+		for row in range(len(self.fallingPiece)):
 				for col in range(len(self.fallingPiece[row])):
-					if temp+row not in range(self.rowNumber) or self.pieceY+col not in range(self.colNumber):
+					#checks if move out of range of canvas
+					if x+row not in range(self.rowNumber) or y+col not in range(self.colNumber):
 						return False
-					if self.fallingPiece[row][col] == True and self.board[temp+row][self.pieceY+col] != self.emptyColor:
-						return False
-		#check column nmove
-		elif dcol != 0:
-			temp = self.pieceY + dcol
-			for row in range(len(self.fallingPiece)):
-				for col in range(len(self.fallingPiece[row])):
-					if self.pieceX+row not in range(self.rowNumber) or temp+col not in range(self.colNumber):
-						return False
-					if self.fallingPiece[row][col] == True and self.board[self.pieceX+row][temp+col] != self.emptyColor:
+					#checks if board filled at that position
+					if self.fallingPiece[row][col] == True and self.board[x][y] != self.emptyColor:
 						return False
 		return True
 
