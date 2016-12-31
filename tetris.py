@@ -5,46 +5,37 @@ from random import randint
 class Game:
 
 	#variables for board design
-	board = []
-	rowNumber = 0; colNumber = 0
+	rowNumber = 15; colNumber = 10
 	emptyColor = "light sea green"
 	cellSize = 30
-
-	tetrisPieces = []
-	tetrisPieceColors = []
-	isGameOver = False
-	score = 0
 
 	#variables to keep track of falling piece
 	fallingPiece = []
 	fallingPieceColor = ""
 	pieceX = 0; pieceY = 0
 
-	def __init__(self, rowNumber, colNumber):
-		self.rowNumber = rowNumber
-		self.colNumber = colNumber
+	#creates root
+	root = Tk()
+	root.resizable(width=0, height=0)
 
-		#creates root
-		self.root = Tk()
-		self.root.resizable(width=0, height=0)
+	#creates canvas
+	canvasWidth = cellSize*(colNumber+3)
+	canvasHeight = cellSize*(rowNumber+3)
+	canvas = Canvas(root, width=canvasWidth, height=canvasHeight)
+	canvas.pack()
 
-		#creates canvas
-		self.canvasWidth = self.cellSize*(self.colNumber+3)
-		self.canvasHeight = self.cellSize*(self.rowNumber+3)
-		self.canvas = Canvas(self.root, width=self.canvasWidth, height=self.canvasHeight)
-		self.canvas.pack()
-
+	def __init__(self):
+		
 		#creates initial board, draws board, initializes pieces
+		self.canvas.delete(ALL)
 		self.createBoardAndPieces()
 		self.drawGame()
 
-		#creates new falling piece
+		#creates new falling piece and drops it
 		self.newFallingPiece()
-
 		self.drop()
 
 		self.root.bind("<Key>", self.keyPressed)
-		#persists until user exits game
 		self.root.mainloop()
 
 	#clears canvas and draws game
@@ -64,6 +55,10 @@ class Game:
 
 	#creates initial board filled with emptyColor, initializes pieces
 	def createBoardAndPieces(self):
+		self.isGameOver = False
+		self.score = 0
+
+		self.board = []
 		for row in range(self.rowNumber):
 			currRow = []
 			for col in range(self.colNumber):
@@ -197,20 +192,34 @@ class Game:
 			for col in range(len(self.fallingPiece[row])):
 				if self.fallingPiece[row][col] == True:
 					self.board[self.pieceX+row][self.pieceY+col] = self.fallingPieceColor
-		#remove full rows
+		self.removeFullRows()
 
 	#
 	def removeFullRows(self):
-		
+		fullRows = 0
+		emptyRow = [self.emptyColor]*self.colNumber
+
+		for row in self.board:
+			#checks for full rows
+			if row.count(self.emptyColor) == 0:
+				#deletes full rows and inserts empty row into board
+				fullRows += 1
+				self.board.remove(row)
+				self.board.insert(0, emptyRow)
+
+		#change score
+		self.score += fullRows**2
+		self.redrawAll()
 
 	def gameOver(self):
 		pass
 
 	#keyboard commands
 	def keyPressed(self, event):
-		if canvas.data.isGameOver == True:
+		if self.isGameOver == True:
 			if event.char == "r":
-				canvas.delete(ALL)
+				self.canvas.delete(ALL)
+				self.__init__()
 		else:		
 			if event.keysym == 'Left':
 				self.moveFallingPiece(0, -1)
@@ -221,5 +230,5 @@ class Game:
 			elif event.keysym == 'Up':
 				self.rotateFallingPiece()
 
-game = Game(15, 10)
+game = Game()
 
