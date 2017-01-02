@@ -52,6 +52,7 @@ class Game:
 	#creates the background
 	def drawBackground(self):
 		self.canvas.create_rectangle(0, 0, self.canvasWidth, self.canvasHeight, fill="black")
+		self.canvas.create_text(10*self.cellSize, 17.25*self.cellSize, text="Score: "+str(self.score), fill="white")
 
 	#creates initial board filled with emptyColor, initializes pieces
 	def createBoardAndPieces(self):
@@ -194,7 +195,7 @@ class Game:
 					self.board[self.pieceX+row][self.pieceY+col] = self.fallingPieceColor
 		self.removeFullRows()
 
-	#
+	#called after new piece placed to remove full rows
 	def removeFullRows(self):
 		fullRows = 0
 		emptyRow = [self.emptyColor]*self.colNumber
@@ -212,7 +213,12 @@ class Game:
 		self.redrawAll()
 
 	def gameOver(self):
-		pass
+		self.canvas.create_rectangle(3*self.cellSize, 3*self.cellSize, 
+			self.canvasWidth-3*self.cellSize, 8*self.cellSize, fill="white")
+		self.canvas.create_text(6.5*self.cellSize, 4*self.cellSize,
+			text="Game Over.")
+		self.canvas.create_text(6.5*self.cellSize, 5*self.cellSize,
+			text="Press 'r' to restart.")
 
 	#keyboard commands
 	def keyPressed(self, event):
